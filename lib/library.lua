@@ -1,26 +1,16 @@
+local WindowClass = require(script.window)
+
 local library = {}
 
--- Load core modules
-library.Window = require(script.window)
-library.Tab = require(script.tab)
-
--- Load elements
-library.Elements = {
-    Label = require(script.elements.label),
-    Button = require(script.elements.button),
-    TextBox = require(script.elements.textbox),
-    Switch = require(script.elements.switch),
-    Slider = require(script.elements.slider),
-    Keybind = require(script.elements.keybind),
-    Dropdown = require(script.elements.dropdown),
-    ColorPicker = require(script.elements.colorpicker),
-    Console = require(script.elements.console),
-    HorizontalAlignment = require(script.elements.horizontalalignment),
-    Folder = require(script.elements.folder),
-}
-
 function library:AddWindow(title, options)
-    return library.Window.CreateWindow(title, options)
+    options = options or {}
+    options.main_color = options.main_color or Color3.fromRGB(41, 74, 122)
+    options.min_size = options.min_size or Vector2.new(500, 600)
+    options.toggle_key = options.toggle_key or Enum.KeyCode.RightShift
+    options.can_resize = options.can_resize ~= false
+
+    local window_data = WindowClass.new(title, options)
+    return window_data, window_data.Instance
 end
 
 return library

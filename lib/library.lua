@@ -1,63 +1,26 @@
--- lib/library.lua
--- Core UI library: handles windows, tabs, folders, and basic layout
-
 local library = {}
-library.windows = {}
 
--- ===== Helper Functions =====
-local function hasprop(obj, prop)
-    local success = pcall(function() return obj[prop] end)
-    return success
-end
+-- Load core modules
+library.Window = require(script.window)
+library.Tab = require(script.tab)
 
-local function create(name, parent, props)
-    local obj = Instance.new(name)
-    for k, v in pairs(props or {}) do
-        obj[k] = v
-    end
-    if parent then obj.Parent = parent end
-    return obj
-end
+-- Load elements
+library.Elements = {
+    Label = require(script.elements.label),
+    Button = require(script.elements.button),
+    TextBox = require(script.elements.textbox),
+    Switch = require(script.elements.switch),
+    Slider = require(script.elements.slider),
+    Keybind = require(script.elements.keybind),
+    Dropdown = require(script.elements.dropdown),
+    ColorPicker = require(script.elements.colorpicker),
+    Console = require(script.elements.console),
+    HorizontalAlignment = require(script.elements.horizontalalignment),
+    Folder = require(script.elements.folder),
+}
 
--- ===== Window Creation =====
 function library:AddWindow(title, options)
-    options = options or {}
-    local Window = create("ScreenGui")
-    Window.Name = title or "Window"
-
-    -- main frame, title bar, resizer etc. (copy relevant code from your original main.lua)
-    
-    -- store window
-    table.insert(library.windows, Window)
-    
-    local window_data = {} -- store tab/folder objects
-    return window_data, Window
-end
-
--- ===== Tab / Folder Functions =====
-function library:AddTab(window, name)
-    -- create a tab object for a window
-    local tab_data = {}
-    local new_tab = create("Frame", window) -- simplified example
-    return tab_data, new_tab
-end
-
-function library:AddFolder(tab, name)
-    -- create a folder object inside a tab
-    local folder_data = {}
-    local folder = create("Frame", tab)
-    return folder_data, folder
-end
-
--- ===== Utilities =====
-function library:FormatWindows()
-    for _, Window in next, library.windows do
-        for i, v in next, Window:GetDescendants() do
-            if hasprop(v, "ZIndex") then
-                v.ZIndex = v.ZIndex + (#library.windows * 10)
-            end
-        end
-    end
+    return library.Window.CreateWindow(title, options)
 end
 
 return library

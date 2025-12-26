@@ -1,15 +1,17 @@
-local ButtonModule = {}
+local Button = {}
+Button.__index = Button
 
-function ButtonModule.Create(parent, text, callback)
-    local button = Instance.new("TextButton") -- Your prefab
-    button.Parent = parent
-    button.Text = text or "Button"
-    
-    if callback then
-        button.MouseButton1Click:Connect(callback)
-    end
+function Button.new(parent_tab, options, text, callback)
+    local btn = Prefabs:FindFirstChild("Button"):Clone()
+    btn.Parent = parent_tab
+    btn.Text = text or "Button"
+    callback = typeof(callback) == "function" and callback or function() end
 
-    return button
+    btn.MouseButton1Click:Connect(function()
+        pcall(callback)
+    end)
+
+    return btn
 end
 
-return ButtonModule
+return Button

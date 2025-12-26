@@ -1,23 +1,37 @@
-local TabModule = {}
-local Elements = require(script.Parent.Elements) -- access elements
+local Elements = {}
+Elements.Button = require(script.elements.button)
+Elements.Switch = require(script.elements.switch)
+Elements.Slider = require(script.elements.slider)
+Elements.TextBox = require(script.elements.textbox)
+Elements.Keybind = require(script.elements.keybind)
+Elements.Dropdown = require(script.elements.dropdown)
+Elements.ColorPicker = require(script.elements.colorpicker)
+Elements.Console = require(script.elements.console)
+Elements.Folder = require(script.elements.folder)
+Elements.HorizontalAlignment = require(script.elements.horizontalalignment)
+Elements.Label = require(script.elements.label)
 
-function TabModule.CreateTab(tab_name, parent_window)
-    local tab_data = {}
-    local new_tab = Instance.new("Frame") -- Your tab prefab
-    new_tab.Parent = parent_window
+local Tab = {}
+Tab.__index = Tab
 
-    -- Example element add functions
-    function tab_data:AddLabel(text)
-        return Elements.Label.Create(new_tab, text)
+function Tab.new(tab_name, parent_window, options)
+    local self = setmetatable({}, Tab)
+    
+    self.Instance = Prefabs:FindFirstChild("Tab"):Clone()
+    self.Instance.Parent = parent_window
+    self.Options = options
+
+    for element_name, element_module in pairs(Elements) do
+        self["Add" .. element_name] = function(...)
+            return element_module.new(self.Instance, options, ...)
+        end
     end
 
-    function tab_data:AddButton(text, callback)
-        return Elements.Button.Create(new_tab, text, callback)
+    function self:Show()
+        self.Instance.Visible = true
     end
 
-    -- Add all other elements similarly...
-
-    return tab_data, new_tab
+    return self, self.Instance
 end
 
-return TabModule
+return Tab

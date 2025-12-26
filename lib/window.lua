@@ -1,22 +1,35 @@
-local WindowModule = {}
+local TabClass = require(script.tab)
+local Utils = require(script.utils)
 
-function WindowModule.CreateWindow(title, options)
-    local window_data = {}
-    local Window = Instance.new("Frame") -- Your prefab or custom UI
-    -- Setup main window: draggable, toggle key, min_size, etc.
+local Window = {}
+Window.__index = Window
 
-    -- Format ZIndex
-    for _, v in next, Window:GetDescendants() do
-        if pcall(function() return v.ZIndex end) then
-            v.ZIndex = v.ZIndex + 10 -- Example
+function Window.new(title, options)
+    local self = setmetatable({}, Window)
+    
+    -- Create the main window (Prefab clone assumed)
+    self.Instance = Prefabs:FindFirstChild("Window"):Clone()
+    self.Instance.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    self.Instance.Title.Text = title
+    self.Options = options
+    self.Tabs = {}
+    
+    function self:AddTab(tab_name)
+        local tab_data, tab_instance = TabClass.new(tab_name, self.Instance, self.Options)
+        table.insert(self.Tabs, tab_data)
+        return tab_data, tab_instance
+    end
+
+    function self:FormatWindows()
+        -- Update ZIndex of descendants
+        for i,v in pairs(self.Instance:GetDescendants()) do
+            if v:IsA("GuiObject") then
+                v.ZIndex = v.ZIndex + 10
+            end
         end
     end
 
-    function window_data:AddTab(tab_name)
-        return require(script.Parent.tab).CreateTab(tab_name, Window)
-    end
-
-    return window_data, Window
+    return self
 end
 
-return WindowModule
+return Window
